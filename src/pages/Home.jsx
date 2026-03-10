@@ -1,64 +1,65 @@
 import { useEffect, useState } from "react"
-import History from "../components/History"
+import MovieList from '../components/MovieList'
 
-export default function Home(){
-    const [search, setSearch] = useState()
-    const storedHistory = localStorage.getItem("search")
-    const [focused, setFocused]  = useState(false)
+const apiKey = import.meta.env.VITE_APP_API_KEY
 
-    const [history, setHistory] = useState(storedHistory ? JSON.parse(storedHistory) : [])
+export default function Home() {
+    const [movies, setMovies] = useState([])
+    const [search, setSearch] = useState('')
+    const [loading, setLoading] = useState(false)
+    const [error, setError] = useState('')
+    
+    
 
-    console.log("Denne kommer fra storage", storedHistory)
+    useEffect(() => {
+        fetchMovies('James Bond')
+    }, [])
 
-    const baseUrl = `http://www.omdbapi.com/?s=${search}&apikey=`
-   //Gjør sånn!!!
-    const apiKey = import.meta.env.VITE_APP_API_KEY
+    useEffect(() => {
+        if (search.length >= 3) {
+            fetchMovies(search)
+        } else if (search.length === 0){
+            fetchMovies('James Bond')
+        }
+    },[search])
 
-    useEffect(() =>{
-        localStorage.setItem("search", JSON.stringify(history))
-    }, [history])
-
-    const getMovies = async()=>{
-        try
-        {
-            const response = await fetch(`${baseUrl}${apiKey}`)
+    const fetchMovies = async (query) => {
+        setLoading(true)
+        setError('')
+        try {
+            const response = await fetch (
+                `https://www.omdbapi.com/?s=${query}&apikey=${API_KEY}`
+            )
             const data = await response.json()
-            console.log(data)
-
+            
+            if (data.Response === 'True')  {
+                setMovies(data.Search)
+            } else {
+                setMovies([])
+                setError('Ingen filmer funnet.')
+            }
+        } catch (err) {
+            setError('Noe gikk galt. Prøv igjen.')
         }
-        catch(err){
-            console.error(err);
-        }
+        setLoading(false)
     }
 
-    const handleChange = (e)=>{
-        setSearch(e.target.value)
-    }
-
-    const handleSubmit = (e)=>{
-        e.preventDefault()
-        e.target.reset()
-
-        setHistory((prev) => [...prev, search])
-
-        
-    }
-    console.log(history)
 
     return (
     <main>
-        <h1>Forside</h1>
-        <form onSubmit={handleSubmit}>
-            <label>
-                Søk etter film
-                <input type="search" placeholder="Harry Potter" onChange={handleChange} onFocus={()=> setFocused(true)} /*</label>onBlur={()=> setFocused(false)}*/></input>
-            </label>
-            {focused ? <History history={history} setSearch={setSearch} /> : null }
-            <button onClick={getMovies}>Søk</button>
-        </form>
-         
-    </main>
-        
-    )
-    
+        <header>
+            <h1>Filmsøk</h1>
+        </header> 
+        {}
+        <section className="search-function">
+            <label htmlFor="search">Søk etter film</label>
+        <input id="search" type="search" placeholder="Skriv her..." value={search} onChange={(e) => setSearch(e.target.value)} />
+        </section>
+
+        {}
+        {loading && <p>Laster filmer..</p>}
+        {error && <p className="error">{error}</p>}
+        {!loading && !error && <MovieList movies={movies} />}
+    </main>  
+    ) 
 }
