@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react"
 import MovieList from '../components/MovieList'
 
-const apiKey = import.meta.env.VITE_APP_API_KEY
+
 
 export default function Home() {
     const [movies, setMovies] = useState([])
@@ -9,7 +9,7 @@ export default function Home() {
     const [loading, setLoading] = useState(false)
     const [error, setError] = useState('')
     
-    
+    const apiKey = import.meta.env.VITE_APP_API_KEY
 
     useEffect(() => {
         fetchMovies('James Bond')
@@ -28,7 +28,7 @@ export default function Home() {
         setError('')
         try {
             const response = await fetch (
-                `https://www.omdbapi.com/?s=${query}&apikey=${API_KEY}`
+                `https://www.omdbapi.com/?s=${query}&apikey=${apiKey}`
             )
             const data = await response.json()
             
@@ -50,13 +50,14 @@ export default function Home() {
         <header>
             <h1>Filmsøk</h1>
         </header> 
-        {}
-        <section className="search-function">
-            <label htmlFor="search">Søk etter film</label>
-        <input id="search" type="search" placeholder="Skriv her..." value={search} onChange={(e) => setSearch(e.target.value)} />
-        </section>
+        
+        <section className="search-section">
+  <label htmlFor="search">Søk etter film</label>
+  <input id="search" type="search" placeholder="Skriv her..." value={search} onChange={(e) => setSearch(e.target.value)} />
+  <button onClick={() => fetchMovies(search)}>Søk</button>
+</section>
 
-        {}
+        
         {loading && <p>Laster filmer..</p>}
         {error && <p className="error">{error}</p>}
         {!loading && !error && <MovieList movies={movies} />}

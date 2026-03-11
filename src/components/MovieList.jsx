@@ -1,10 +1,10 @@
 import MovieCard from './MovieCard'
 
 export default function MovieList({ movies }) {
-    return(
+    return (
         <section className="movie-list">
-            {movies.map((movie) => (
-                <MovieCard key={movie.imdbID} movie={movie} />
+            {movies.map((movie, index) => (
+                <MovieCard key={`${movie.imdbID}${index}`} movie={movie} />
             ))}
         </section>
     )

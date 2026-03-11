@@ -1,8 +1,7 @@
-import './App.css'
-import { Route, Routes} from 'react-router-dom'
+import { Route, Routes } from 'react-router-dom'
 import Home from './pages/Home'
 import Movie from './pages/Movie'
-
+import './App.css'
 
 
 function App() {
